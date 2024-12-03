@@ -3,7 +3,6 @@ package com.dn.shop.controller;
 import com.dn.shop.model.dto.AddProductDTO;
 import com.dn.shop.model.dto.EditProductDTO;
 import com.dn.shop.model.dto.ProductDTO;
-import com.dn.shop.model.entity.Product;
 import com.dn.shop.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

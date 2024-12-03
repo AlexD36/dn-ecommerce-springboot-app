@@ -5,10 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-import com.dn.shop.model.entity.Product;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

@@ -1,6 +1,5 @@
 package com.dn.shop.repository;
 
-import com.dn.shop.model.dto.BasketDTO;
 import com.dn.shop.model.entity.User;
 
 import jakarta.transaction.Transactional;

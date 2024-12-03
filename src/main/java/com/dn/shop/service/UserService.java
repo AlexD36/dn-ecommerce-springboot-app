@@ -1,6 +1,5 @@
 package com.dn.shop.service;
 import com.dn.shop.model.dto.AddUserDTO;
-import com.dn.shop.model.entity.Product;
 import com.dn.shop.model.entity.User;
 import com.dn.shop.repository.ProductRepository;
 import com.dn.shop.repository.UserRepository;
@@ -92,7 +91,7 @@ public class UserService {
             return ResponseEntity.badRequest().body("User not found!");
         }
 
-        if(!userRepository.findById(userID).get().getBasket().contains(productRepository.findById(productId)) || userRepository.findById(userID).get().getBasket().isEmpty()) {
+        if(!userRepository.findById(userID).get().getBasket().contains(productRepository.findById(productId).get()) || userRepository.findById(userID).get().getBasket().isEmpty()) {
             return ResponseEntity.badRequest().body("Basket is empty or the product was not found!");
 
         }

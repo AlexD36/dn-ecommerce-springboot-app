@@ -6,7 +6,6 @@ import com.dn.shop.model.entity.Product;
 import com.dn.shop.repository.ProductRepository;
 import com.dn.shop.repository.UserRepository;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @Log4j2
@@ -24,14 +25,19 @@ public class ProductService {
     private final UserRepository userRepository;
 
     public List<Product> get() {
-
-            return productRepository.findAll();
+        return StreamSupport
+                .stream(productRepository.findAll().spliterator(), false)
+                .map(dto -> Product.builder()
+                    .name(dto.getName())
+                    .description(dto.getDescription())
+                    .build())
+                .collect(Collectors.toList());
     }
 
 
 
     public ResponseEntity<String> add(AddProductDTO product) {
-        Product toBeSaved = ((Object) Product.builder())
+        Product toBeSaved = Product.builder()
                 .description(product.getDescription().toLowerCase())
                 .name(product.getName().toLowerCase())
                 .build();
