@@ -3,7 +3,7 @@
 
 ![Java](https://img.shields.io/badge/Java-17+-brightgreen) 
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.x-brightgreen) 
-![MySQL](https://img.shields.io/badge/Database-MySQL-blue) 
+![H2 Database](https://img.shields.io/badge/Database-H2-blue) 
 ![Maven](https://img.shields.io/badge/Build-Maven-orange)
 
 ## **Overview**
