@@ -1,7 +1,7 @@
 package com.dn.shop.service;
 
-import com.dn.shop.model.dto.AddProductDTO;
-import com.dn.shop.model.dto.EditProductDTO;
+import com.dn.shop.model.dto.product.AddProductDTO;
+import com.dn.shop.model.dto.product.EditProductDTO;
 import com.dn.shop.model.entity.Product;
 import com.dn.shop.repository.ProductRepository;
 import com.dn.shop.repository.UserRepository;
@@ -62,10 +62,10 @@ public class ProductService {
     }
 
     public ResponseEntity<String> add(AddProductDTO product) {
-        Product toBeSaved = Product.builder()
-                .description(product.getDescription().toLowerCase())
-                .name(product.getName().toLowerCase())
-                .build();
+        Product toBeSaved = new Product(
+                product.getName().toLowerCase(),
+                product.getDescription().toLowerCase()
+        );
         if(productRepository.findByName(toBeSaved.getName()).isPresent()){
             return ResponseEntity.badRequest().body("Product already exists!");
         }

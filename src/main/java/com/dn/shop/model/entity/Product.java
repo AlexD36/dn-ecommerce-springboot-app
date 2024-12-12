@@ -3,8 +3,15 @@ package com.dn.shop.model.entity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.*;
 
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
+@Table(name = "product_table")
 public class Product extends BaseEntity {
     
     private String name; // Product name
@@ -83,5 +90,11 @@ public class Product extends BaseEntity {
         } else {
             throw new IllegalArgumentException("Insufficient stock available.");
         }
+    }
+
+    // Add this constructor
+    public Product(String name, String description) {
+        this.name = name;
+        this.description = description;
     }
 }
