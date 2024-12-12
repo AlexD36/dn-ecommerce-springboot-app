@@ -57,15 +57,13 @@ This project is a backend system for an e-commerce application, built using **Ja
 ### **Testing**
 - **JUnit**: Unit testing.
 - - **Swagger**
-  - or
-- **Postman**: Manual API testing.
-  
+  - **Postman**: Manual API testing.
+
 
 ---
 
 ## **Project Structure**
 
-```plaintext
 src/main/java/com/example/ecommerce/
 ├── controller/        # REST controllers for handling API requests.
 ├── dto/               # Data Transfer Objects for data input/output.
@@ -79,7 +77,6 @@ src/main/java/com/example/ecommerce/
 ├── repository/        # Interfaces for database interactions.
 ├── service/           # Business logic services.
 └── utils/             # Utility classes (e.g., JWT handling, mappers).
-```
 
 ---
 
@@ -114,23 +111,14 @@ src/main/java/com/example/ecommerce/
 ### **Prerequisites**
 1. Install **Java 17** or higher.
 2. Install **Maven** for build management.
-3. Install **MySQL** and set up a database.
 
 ### **Clone the Repository**
-```bash
-git clone https://github.com/your-username/ecommerce-backend.git
-cd ecommerce-backend
-```
 
-### **Configure Database**
-1. Open `src/main/resources/application.properties`.
-2. Update the following properties:
-   ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce_db
-   spring.datasource.username=your_username
-   spring.datasource.password=your_password
-   spring.jpa.hibernate.ddl-auto=update
-   ```
+git clone https://github.com/AlexD36/dn-ecommerce-springboot-app
+cd dn-ecommerce-springboot-app
+
+
+
 
 ### **Run the Application**
 1. Build the project:
