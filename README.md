@@ -1,8 +1,4 @@
-Here’s a detailed **README.md** for your e-commerce backend project in Java with Spring Boot:
 
----
-
-```markdown
 # E-Commerce Backend with Spring Boot
 
 ![Java](https://img.shields.io/badge/Java-17+-brightgreen) 
@@ -178,7 +174,6 @@ If you have any questions or suggestions, feel free to reach out:
 - **Email**: your-email@example.com
 - **GitHub**: [your-username](https://github.com/your-username)
 
----
 
 ### **Screenshots (Optional)**
 Include screenshots of your Swagger UI, database structure, or example API requests and responses.
