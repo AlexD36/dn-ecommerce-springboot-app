@@ -64,6 +64,7 @@ This project is a backend system for an e-commerce application, built using **Ja
 
 ## **Project Structure**
 
+```plaintext
 src/main/java/com/example/ecommerce/
 ├── controller/        # REST controllers for handling API requests.
 ├── dto/               # Data Transfer Objects for data input/output.
@@ -77,6 +78,7 @@ src/main/java/com/example/ecommerce/
 ├── repository/        # Interfaces for database interactions.
 ├── service/           # Business logic services.
 └── utils/             # Utility classes (e.g., JWT handling, mappers).
+```
 
 ---
 
