@@ -10,9 +10,14 @@ import com.dn.shop.model.entity.Product;
 public class CartDTO {
     private Long id; // Unique identifier of the cart
     private Long userId; // The ID of the user owning the cart
-    private List<CartItemDTO> cartItems; // A list of CartItemDTO objects
+    private List<CartItemDTO> cartItems = new ArrayList<>(); // Initialize to avoid null
     private BigDecimal totalPrice; // The total price of the items in the cart
-    private List<Product> cart; // Assuming Product is the type of items in the cart
+    private List<Product> cart = new ArrayList<>(); // Initialize to avoid null
+
+    // Constructor
+    public CartDTO() {
+        // Initialize fields if necessary
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -36,7 +41,7 @@ public class CartDTO {
     }
 
     public void setCartItems(List<CartItemDTO> cartItems) {
-        this.cartItems = cartItems;
+        this.cartItems = cartItems != null ? cartItems : new ArrayList<>(); // Avoid null
     }
 
     public BigDecimal getTotalPrice() {
@@ -61,6 +66,6 @@ public class CartDTO {
     }
 
     public List<Product> getCart() {
-        return cart != null ? cart : new ArrayList<>(); // Return an empty list if cart is null
+        return cart; // Already initialized
     }
 } 

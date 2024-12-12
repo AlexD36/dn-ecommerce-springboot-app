@@ -14,9 +14,16 @@ import lombok.*;
 @Table(name = "product_table")
 public class Product extends BaseEntity {
     
+    @Column(nullable = false)
     private String name; // Product name
+
+    @Column(nullable = false)
     private String description; // Detailed product description
+
+    @Column(nullable = false)
     private BigDecimal price; // Product price
+
+    @Column(nullable = false)
     private int stock; // Quantity available in inventory
 
     @ManyToOne // Many-to-One relationship with Category
@@ -26,75 +33,11 @@ public class Product extends BaseEntity {
     private LocalDateTime createdAt; // Timestamp of product creation
     private LocalDateTime updatedAt; // Timestamp of the last update
 
-    // Getters and Setters
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    // Method to reduce stock
-    public void reduceStock(int quantity) {
-        if (quantity <= stock) {
-            this.stock -= quantity; // Reduce stock by the specified quantity
-        } else {
-            throw new IllegalArgumentException("Insufficient stock available.");
-        }
-    }
-
-    // Add this constructor
-    public Product(String name, String description) {
+    public Product(String name, String description, BigDecimal price, int stock, Category category) {
         this.name = name;
         this.description = description;
+        setPrice(price); // Use setter for validation
+        setStock(stock); // Use setter for validation
+        this.category = category; // Set the category
     }
 }

@@ -4,7 +4,6 @@ import com.dn.shop.model.dto.product.EditProductDTO;
 import com.dn.shop.model.dto.product.CreateProductDTO;
 import com.dn.shop.model.entity.Product;
 import com.dn.shop.service.ProductService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,7 +19,6 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
-    private final ObjectMapper mapper;
 
     // Endpoint to fetch all products
     @GetMapping

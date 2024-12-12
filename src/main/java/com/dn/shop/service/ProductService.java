@@ -5,12 +5,15 @@ import com.dn.shop.model.entity.Product;
 import com.dn.shop.repository.ProductRepository;
 import com.dn.shop.repository.UserRepository;
 import com.dn.shop.model.dto.product.CreateProductDTO;
+import com.dn.shop.model.entity.Category;
+import com.dn.shop.repository.CategoryRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,6 +26,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
     public List<Product> getAllProducts() {
         return StreamSupport
@@ -62,11 +66,20 @@ public class ProductService {
     }
 
     public ResponseEntity<String> add(CreateProductDTO newProduct) {
+        BigDecimal defaultPrice = newProduct.getPrice();
+        int defaultStock = newProduct.getStock();
+
+        Category category = categoryRepository.findById(newProduct.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+
         Product toBeSaved = new Product(
                 newProduct.getName().toLowerCase(),
-                newProduct.getDescription().toLowerCase()
+                newProduct.getDescription().toLowerCase(),
+                defaultPrice,
+                defaultStock,
+                category
         );
-        if(productRepository.findByName(toBeSaved.getName()).isPresent()){
+        if (productRepository.findByName(toBeSaved.getName()).isPresent()) {
             return ResponseEntity.badRequest().body("Product already exists!");
         }
         productRepository.save(toBeSaved);
