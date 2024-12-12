@@ -1,6 +1,8 @@
 package com.dn.shop.controller;
-import com.dn.shop.model.dto.AddUserDTO;
-import com.dn.shop.model.dto.GetUserDTO;
+import com.dn.shop.model.dto.cart.CartDTO;
+import com.dn.shop.model.dto.cart.UpdateCartItemDTO;
+import com.dn.shop.model.dto.user.AddUserDTO;
+import com.dn.shop.model.dto.user.GetUserDTO;
 import com.dn.shop.model.entity.User;
 import com.dn.shop.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,8 +23,8 @@ public class UserController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody AddUserDTO addUserDTO){
-        return userService.addUser(addUserDTO);
+    public ResponseEntity<String> registerUser(@RequestBody RegisterUserDTO registerUserDTO){
+        return userService.addUser(registerUserDTO);
     }
 
     @PostMapping("/login")
@@ -59,15 +61,20 @@ public class UserController {
     }
 
    @Transactional
-   @DeleteMapping("/deleteProductFromUserBasket")
+   @DeleteMapping("/deleteProductFromUserCart")
    public ResponseEntity<String> deleteProduct(@RequestParam("userID") Long userID , @RequestParam("productId") Long productId){
-        return userService.removeProductFromUserBasket(userID,productId);
+        return userService.removeProductFromUserCart(userID,productId);
     }
 
     @Transactional
-   @PostMapping("/addProductsToBasket")
-    public ResponseEntity<String> addProductsToUserBasket(@RequestParam("userID") Long userID , @RequestParam("productName") String productName){
-        return userService.addProductToUserBasket(userID,productName);
+   @PostMapping("/addProductsToCart")
+    public ResponseEntity<String> addProductsToUserCart(@RequestParam("userID") Long userID , @RequestParam("productName") String productName){
+        return userService.addProductToUserCart(userID,productName);
+    }
+
+    @PostMapping("/addCart")
+    public ResponseEntity<String> addCart(@RequestBody CartDTO cartDTO) {
+        return userService.addCart(cartDTO);
     }
 
 }

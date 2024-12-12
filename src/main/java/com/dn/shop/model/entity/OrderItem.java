@@ -14,11 +14,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Entity
 @Table(name = "order_item")
-public class OrderItem {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+public class OrderItem extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)

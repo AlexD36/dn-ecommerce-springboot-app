@@ -1,6 +1,7 @@
 package com.dn.shop.repository;
 
 import com.dn.shop.model.entity.User;
+import com.dn.shop.model.dto.cart.CartDTO;
 
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,5 +37,7 @@ public interface UserRepository extends JpaRepository<User , Long> {
     void updateUserEmail(@Param("oldEmail") String oldEmail , @Param("newEmail") String newEmail);
 
     Optional<User> findByEmail(String email);
+
+    void saveCart(CartDTO cartDTO);
 
 }

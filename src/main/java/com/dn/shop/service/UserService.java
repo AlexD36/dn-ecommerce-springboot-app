@@ -1,5 +1,7 @@
 package com.dn.shop.service;
-import com.dn.shop.model.dto.AddUserDTO;
+import com.dn.shop.model.dto.cart.CartDTO;
+import com.dn.shop.model.dto.cart.UpdateCartItemDTO;
+import com.dn.shop.model.dto.user.AddUserDTO;
 import com.dn.shop.model.entity.User;
 import com.dn.shop.repository.ProductRepository;
 import com.dn.shop.repository.UserRepository;
@@ -29,8 +31,8 @@ public class UserService {
                 .firstName(addUserDTO.getFirst_name().toLowerCase())
                 .lastName(addUserDTO.getLast_name().toLowerCase())
                 .email(addUserDTO.getEmail().toLowerCase())
-                .password(addUserDTO.getPassword().toLowerCase())
-                .basket(addUserDTO.getBasketDTO().getBasket())
+                .password(passwordEncoder.encode(addUserDTO.getPassword()))
+                .cart(addUserDTO.getCartDTO().getCart())
                 .build();
        if(userRepository.count() == 0){
             userRepository.save(userToBeSaved);
@@ -75,12 +77,12 @@ public class UserService {
 
 
 
-   public ResponseEntity<String> addProductToUserBasket(Long uId , String productName){
+   public ResponseEntity<String> addProductToUserCart(Long uId , String productName){
         if(userRepository.count() == 0 || productRepository.count() == 0){
             return ResponseEntity.noContent().build();
         }
         if(userRepository.findById(uId).isPresent() && productRepository.findByName(productName).isPresent()){
-            userRepository.findById(uId).get().getBasket().add(productRepository.findByName(productName).get());
+            userRepository.findById(uId).get().getCart().add(productRepository.findByName(productName).get());
             return ResponseEntity.ok("Added Succesfully");
         }
         return ResponseEntity.badRequest().body("Something went wrong");
@@ -88,17 +90,17 @@ public class UserService {
 
     }
 
-    public ResponseEntity<String> removeProductFromUserBasket(Long userID , Long productId){
+    public ResponseEntity<String> removeProductFromUserCart(Long userID , Long productId){
         if(!userRepository.findById(userID).isPresent()){
             return ResponseEntity.badRequest().body("User not found!");
         }
 
-        if(!userRepository.findById(userID).get().getBasket().contains(productRepository.findById(productId).get()) || userRepository.findById(userID).get().getBasket().isEmpty()) {
-            return ResponseEntity.badRequest().body("Basket is empty or the product was not found!");
+        if(!userRepository.findById(userID).get().getCart().contains(productRepository.findById(productId).get()) || userRepository.findById(userID).get().getCart().isEmpty()) {
+            return ResponseEntity.badRequest().body("Cart is empty or the product was not found!");
 
         }
-        userRepository.findById(userID).get().getBasket().remove(productRepository.findById(productId).get());
-        return ResponseEntity.ok("Product Deleted from the basket");
+        userRepository.findById(userID).get().getCart().remove(productRepository.findById(productId).get());
+        return ResponseEntity.ok("Product Deleted from the cart");
     }
 
     public ResponseEntity<String> registerUser(User user) {
@@ -134,5 +136,21 @@ public class UserService {
             return ResponseEntity.ok("User details updated successfully!");
         }
         return ResponseEntity.notFound().build();
+    }
+
+    public ResponseEntity<String> addCart(CartDTO cartDTO, Long userId) {
+        // Check if the user exists
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (!userOptional.isPresent()) {
+            return ResponseEntity.badRequest().body("User not found!");
+        }
+
+        // Associate the cart with the user
+        User user = userOptional.get();
+        user.setCart(cartDTO.getCart()); // Assuming CartDTO has a method to get the cart
+
+        // Save the updated user with the new cart
+        userRepository.save(user);
+        return ResponseEntity.ok("Cart added successfully!");
     }
 }

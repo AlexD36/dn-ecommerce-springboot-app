@@ -1,46 +1,87 @@
 package com.dn.shop.model.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
-@Table(name="product")
-public class Product {
+public class Product extends BaseEntity {
+    
+    private String name; // Product name
+    private String description; // Detailed product description
+    private BigDecimal price; // Product price
+    private int stock; // Quantity available in inventory
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
-    private String name;
-    private String description;
-
-    // Assuming you have a stock field to manage inventory
-    private int stock;
-
-    // Reference to Category
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
+    @ManyToOne // Many-to-One relationship with Category
+    @JoinColumn(name = "category_id", nullable = false) // Foreign key column
     private Category category;
+
+    private LocalDateTime createdAt; // Timestamp of product creation
+    private LocalDateTime updatedAt; // Timestamp of the last update
+
+    // Getters and Setters
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 
     // Method to reduce stock
     public void reduceStock(int quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Quantity must be greater than zero.");
-        }
-        if (quantity > this.stock) {
+        if (quantity <= stock) {
+            this.stock -= quantity; // Reduce stock by the specified quantity
+        } else {
             throw new IllegalArgumentException("Insufficient stock available.");
         }
-        this.stock -= quantity; // Reduce stock by the specified quantity
-    }
-
-    // Helper method to display the category name
-    public String getCategoryName() {
-        return category != null ? category.getName() : "No category assigned";
     }
 }

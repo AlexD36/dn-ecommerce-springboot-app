@@ -1,13 +1,17 @@
-package com.dn.shop.model.dto;
+package com.dn.shop.model.dto.cart;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+import com.dn.shop.model.dto.order.CartItemDTO;
+import com.dn.shop.model.dto.product.Product;
 
 public class CartDTO {
     private Long id; // Unique identifier of the cart
     private Long userId; // The ID of the user owning the cart
     private List<CartItemDTO> cartItems; // A list of CartItemDTO objects
     private BigDecimal totalPrice; // The total price of the items in the cart
+    private List<Product> cart; // Assuming Product is the type of items in the cart
 
     // Getters and Setters
     public Long getId() {
@@ -40,5 +44,13 @@ public class CartDTO {
 
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public List<Product> getCart() {
+        return cart;
+    }
+
+    public void setCart(List<Product> cart) {
+        this.cart = cart;
     }
 } 
