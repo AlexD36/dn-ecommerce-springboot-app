@@ -1,4 +1,4 @@
-package com.dn.shop.model.dto;
+package com.dn.shop.model.dto.order;
 
 import java.math.BigDecimal;
 import java.util.Date;

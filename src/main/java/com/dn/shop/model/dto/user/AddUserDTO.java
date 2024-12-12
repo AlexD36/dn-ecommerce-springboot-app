@@ -1,6 +1,5 @@
 package com.dn.shop.model.dto.user;
 
-import com.dn.shop.model.dto.cart.CartDTO;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -22,9 +21,6 @@ public class AddUserDTO {
     @NotNull(message = "Password cannot be null")
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
-
-    // Assuming there is a BasketDTO that you might want to include
-    private CartDTO basketDTO; // Adjust this if you have a different structure
 
     // Getters and Setters
     public String getFirstName() {
@@ -57,9 +53,5 @@ public class AddUserDTO {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public void setBasketDTO(CartDTO basketDTO) {
-        this.basketDTO = basketDTO;
     }
 }

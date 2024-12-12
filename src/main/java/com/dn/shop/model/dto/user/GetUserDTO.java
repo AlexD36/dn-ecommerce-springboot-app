@@ -1,4 +1,4 @@
-package com.dn.shop.model.dto;
+package com.dn.shop.model.dto.user;
 
 import com.dn.shop.model.entity.Product;
 import com.fasterxml.jackson.annotation.JsonProperty;

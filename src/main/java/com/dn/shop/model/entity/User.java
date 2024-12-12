@@ -33,7 +33,7 @@ public class User implements UserDetails {
     @OneToMany
     private List<Product> basket;
 
-    private List<GrantedAuthority> authorities;
+    private List<Product> cart;
 
     // Getters and Setters (Lombok will generate these due to @Getter and @Setter)
 
@@ -47,6 +47,7 @@ public class User implements UserDetails {
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", basket=" + basket +
+                ", cart=" + cart +
                 '}';
     }
 
@@ -90,5 +91,18 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true; // Implement your logic
+    }
+
+    /**
+     * Sets the basket for the user.
+     * 
+     * @param basket A list of Product objects to be set in the user's basket.
+     */
+    public void setCart(List<Product> basket) {
+        this.basket = basket; // Use 'basket' as the field in the User class
+    }
+
+    public List<Product> getCart() {
+        return cart != null ? cart : new ArrayList<>();
     }
 }

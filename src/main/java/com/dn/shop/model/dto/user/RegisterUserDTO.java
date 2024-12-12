@@ -1,5 +1,6 @@
-package com.dn.shop.model.dto;
+package com.dn.shop.model.dto.user;
 
+import com.dn.shop.model.dto.cart.CartDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -19,6 +20,10 @@ public class RegisterUserDTO {
     private String password; // The user's password
 
     private String confirmPassword; // Optional, for password confirmation
+
+    private String firstName;
+    private String lastName;
+    private CartDTO cartDTO; // Assuming this is also part of the DTO
 
     // Getters and Setters
     public String getName() {
@@ -51,5 +56,32 @@ public class RegisterUserDTO {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public CartDTO getCartDTO() {
+        return cartDTO;
+    }
+
+    /**
+     * Adds a user after validating the password and confirm password.
+     * @throws IllegalArgumentException if passwords do not match.
+     */
+    public void addUser() {
+        // Validate that the password and confirm password match
+        if (!password.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Passwords do not match.");
+        }
+        
+        // Logic to add the user (e.g., save to database) would go here
+        // For now, we will just print a success message
+        System.out.println("User " + name + " added successfully with email " + email + ".");
     }
 } 

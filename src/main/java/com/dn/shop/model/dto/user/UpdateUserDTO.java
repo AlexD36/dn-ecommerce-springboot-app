@@ -1,4 +1,4 @@
-package com.dn.shop.model.dto;
+package com.dn.shop.model.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;

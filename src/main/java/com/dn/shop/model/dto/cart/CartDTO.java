@@ -2,9 +2,10 @@ package com.dn.shop.model.dto.cart;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.ArrayList;
 
 import com.dn.shop.model.dto.order.CartItemDTO;
-import com.dn.shop.model.dto.product.Product;
+import com.dn.shop.model.entity.Product;
 
 public class CartDTO {
     private Long id; // Unique identifier of the cart
@@ -46,11 +47,20 @@ public class CartDTO {
         this.totalPrice = totalPrice;
     }
 
-    public List<Product> getCart() {
-        return cart;
+    /**
+     * Sets the list of products in the cart.
+     * 
+     * @param cart A list of Product objects to be set in the cart.
+     * @throws IllegalArgumentException if the provided list is null.
+     */
+    public void setCart(List<Product> cart) {
+        if (cart == null) {
+            throw new IllegalArgumentException("Cart cannot be null.");
+        }
+        this.cart = cart;
     }
 
-    public void setCart(List<Product> cart) {
-        this.cart = cart;
+    public List<Product> getCart() {
+        return cart != null ? cart : new ArrayList<>(); // Return an empty list if cart is null
     }
 } 

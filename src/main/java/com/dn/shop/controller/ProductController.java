@@ -1,7 +1,7 @@
 package com.dn.shop.controller;
 
-import com.dn.shop.model.dto.AddProductDTO;
 import com.dn.shop.model.dto.product.EditProductDTO;
+import com.dn.shop.model.dto.product.CreateProductDTO;
 import com.dn.shop.model.entity.Product;
 import com.dn.shop.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +36,7 @@ public class ProductController {
 
     // Endpoint to add a new product
     @PostMapping
-    public ResponseEntity<String> addProduct(@RequestBody AddProductDTO newProduct) {
+    public ResponseEntity<String> addProduct(@RequestBody CreateProductDTO newProduct) {
         log.info("Adding newly received product {}", newProduct);
         return productService.add(newProduct);
     }

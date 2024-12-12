@@ -1,4 +1,4 @@
-package com.dn.shop.model.dto;
+package com.dn.shop.model.dto.category;
 
 public class CategoryDTO {
     private Long id; // Unique identifier of the category

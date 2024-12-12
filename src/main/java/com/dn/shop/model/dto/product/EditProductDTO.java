@@ -1,4 +1,4 @@
-package com.dn.shop.model.dto;
+package com.dn.shop.model.dto.product;
 
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;

@@ -1,10 +1,10 @@
 package com.dn.shop.service;
 
-import com.dn.shop.model.dto.product.AddProductDTO;
 import com.dn.shop.model.dto.product.EditProductDTO;
 import com.dn.shop.model.entity.Product;
 import com.dn.shop.repository.ProductRepository;
 import com.dn.shop.repository.UserRepository;
+import com.dn.shop.model.dto.product.CreateProductDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -61,10 +61,10 @@ public class ProductService {
         return ResponseEntity.ok("Product deleted successfully!");
     }
 
-    public ResponseEntity<String> add(AddProductDTO product) {
+    public ResponseEntity<String> add(CreateProductDTO newProduct) {
         Product toBeSaved = new Product(
-                product.getName().toLowerCase(),
-                product.getDescription().toLowerCase()
+                newProduct.getName().toLowerCase(),
+                newProduct.getDescription().toLowerCase()
         );
         if(productRepository.findByName(toBeSaved.getName()).isPresent()){
             return ResponseEntity.badRequest().body("Product already exists!");

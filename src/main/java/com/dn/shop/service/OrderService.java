@@ -1,9 +1,7 @@
 package com.dn.shop.service;
 
 import com.dn.shop.model.entity.Order;
-import com.dn.shop.model.entity.User;
 import com.dn.shop.repository.OrderRepository;
-import com.dn.shop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +16,6 @@ import java.util.Optional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
 
     // Method to create a new order
     public ResponseEntity<String> createOrder(Order order) {

@@ -3,6 +3,7 @@ import com.dn.shop.model.dto.cart.CartDTO;
 import com.dn.shop.model.dto.cart.UpdateCartItemDTO;
 import com.dn.shop.model.dto.user.AddUserDTO;
 import com.dn.shop.model.dto.user.GetUserDTO;
+import com.dn.shop.model.dto.user.RegisterUserDTO;
 import com.dn.shop.model.entity.User;
 import com.dn.shop.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,8 +74,8 @@ public class UserController {
     }
 
     @PostMapping("/addCart")
-    public ResponseEntity<String> addCart(@RequestBody CartDTO cartDTO) {
-        return userService.addCart(cartDTO);
+    public ResponseEntity<String> addCart(@RequestBody CartDTO cartDTO, @RequestParam Long userId) {
+        return userService.addCart(cartDTO, userId);
     }
 
 }

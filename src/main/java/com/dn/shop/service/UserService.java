@@ -1,7 +1,8 @@
 package com.dn.shop.service;
+
 import com.dn.shop.model.dto.cart.CartDTO;
-import com.dn.shop.model.dto.cart.UpdateCartItemDTO;
-import com.dn.shop.model.dto.user.AddUserDTO;
+import com.dn.shop.model.dto.user.RegisterUserDTO;
+import com.dn.shop.model.entity.Product;
 import com.dn.shop.model.entity.User;
 import com.dn.shop.repository.ProductRepository;
 import com.dn.shop.repository.UserRepository;
@@ -25,21 +26,25 @@ public class UserService {
     private final ProductRepository productRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public ResponseEntity<String> addUser(AddUserDTO addUserDTO){
+    public ResponseEntity<String> addUser(RegisterUserDTO registerUserDTO){
+        // Validate input
+        if (registerUserDTO == null || registerUserDTO.getEmail() == null || registerUserDTO.getPassword() == null) {
+            return ResponseEntity.badRequest().body("Invalid user data!");
+        }
 
         User userToBeSaved = User.builder()
-                .firstName(addUserDTO.getFirst_name().toLowerCase())
-                .lastName(addUserDTO.getLast_name().toLowerCase())
-                .email(addUserDTO.getEmail().toLowerCase())
-                .password(passwordEncoder.encode(addUserDTO.getPassword()))
-                .cart(addUserDTO.getCartDTO().getCart())
+                .firstName(registerUserDTO.getFirstName().toLowerCase())
+                .lastName(registerUserDTO.getLastName().toLowerCase())
+                .email(registerUserDTO.getEmail().toLowerCase())
+                .password(passwordEncoder.encode(registerUserDTO.getPassword()))
+                .cart(registerUserDTO.getCartDTO() != null ? registerUserDTO.getCartDTO().getCart() : null) // Handle potential null cartDTO
                 .build();
        if(userRepository.count() == 0){
             userRepository.save(userToBeSaved);
             return ResponseEntity.accepted().body("Added Succesfully!");
         }
 
-       if(userRepository.checkIfUserExists(addUserDTO.getFirst_name().toLowerCase(), addUserDTO.getLast_name().toLowerCase(), addUserDTO.getEmail().toLowerCase())){
+       if(userRepository.checkIfUserExists(registerUserDTO.getFirstName().toLowerCase(), registerUserDTO.getLastName().toLowerCase(), registerUserDTO.getEmail().toLowerCase())){
             return ResponseEntity.badRequest().body("User already exists!");
         }
         userRepository.save(userToBeSaved);
@@ -51,6 +56,11 @@ public class UserService {
     }
 
     public ResponseEntity<String> deleteUserByEmail(String email){
+        // Validate email input
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.badRequest().body("Email cannot be null or empty!");
+        }
+
         if(userRepository.findUserByEmail(email.toLowerCase())){
             userRepository.deleteUserByEmail(email.toLowerCase());
             return ResponseEntity.accepted()
@@ -61,6 +71,11 @@ public class UserService {
     }
 
     public ResponseEntity<String> updateUserEmail(String oldmail , String newmail){
+        // Validate email inputs
+        if (oldmail == null || newmail == null || oldmail.isEmpty() || newmail.isEmpty()) {
+            return ResponseEntity.badRequest().body("Email cannot be null or empty!");
+        }
+
         if(userRepository.count() == 0){
             return ResponseEntity.noContent().build();
         }
@@ -78,6 +93,11 @@ public class UserService {
 
 
    public ResponseEntity<String> addProductToUserCart(Long uId , String productName){
+        // Validate inputs
+        if (uId == null || productName == null || productName.isEmpty()) {
+            return ResponseEntity.badRequest().body("User ID and product name cannot be null or empty!");
+        }
+
         if(userRepository.count() == 0 || productRepository.count() == 0){
             return ResponseEntity.noContent().build();
         }
@@ -91,15 +111,22 @@ public class UserService {
     }
 
     public ResponseEntity<String> removeProductFromUserCart(Long userID , Long productId){
-        if(!userRepository.findById(userID).isPresent()){
+        // Validate inputs
+        if (userID == null || productId == null) {
+            return ResponseEntity.badRequest().body("User ID and product ID cannot be null!");
+        }
+
+        Optional<User> userOptional = userRepository.findById(userID);
+        if (!userOptional.isPresent()) {
             return ResponseEntity.badRequest().body("User not found!");
         }
 
-        if(!userRepository.findById(userID).get().getCart().contains(productRepository.findById(productId).get()) || userRepository.findById(userID).get().getCart().isEmpty()) {
+        User user = userOptional.get();
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (!user.getCart().contains(productOptional.orElse(null)) || user.getCart().isEmpty()) {
             return ResponseEntity.badRequest().body("Cart is empty or the product was not found!");
-
         }
-        userRepository.findById(userID).get().getCart().remove(productRepository.findById(productId).get());
+        user.getCart().remove(productOptional.get());
         return ResponseEntity.ok("Product Deleted from the cart");
     }
 
@@ -139,6 +166,11 @@ public class UserService {
     }
 
     public ResponseEntity<String> addCart(CartDTO cartDTO, Long userId) {
+        // Validate inputs
+        if (cartDTO == null || userId == null) {
+            return ResponseEntity.badRequest().body("Cart data and user ID cannot be null!");
+        }
+
         // Check if the user exists
         Optional<User> userOptional = userRepository.findById(userId);
         if (!userOptional.isPresent()) {
@@ -147,7 +179,7 @@ public class UserService {
 
         // Associate the cart with the user
         User user = userOptional.get();
-        user.setCart(cartDTO.getCart()); // Assuming CartDTO has a method to get the cart
+        user.setCart(cartDTO.getCart()); // Ensure getCart() returns a List<Product>
 
         // Save the updated user with the new cart
         userRepository.save(user);
