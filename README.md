@@ -46,7 +46,7 @@ This project is a backend system for an e-commerce application, built using **Ja
 - **Spring Security**: For authentication and authorization.
 
 ### **Database**
-- **MySQL**: Relational database to store all data.
+- **H2 Database**: Lightweight in-memory database for rapid development and testing.
 - **JPA/Hibernate**: ORM for database operations.
 
 ### **Tools & Build**
@@ -56,7 +56,10 @@ This project is a backend system for an e-commerce application, built using **Ja
 
 ### **Testing**
 - **JUnit**: Unit testing.
+- - **Swagger**
+  - or
 - **Postman**: Manual API testing.
+  
 
 ---
 
