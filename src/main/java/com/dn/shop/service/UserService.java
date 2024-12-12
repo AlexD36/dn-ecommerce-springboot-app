@@ -3,14 +3,15 @@ import com.dn.shop.model.dto.AddUserDTO;
 import com.dn.shop.model.entity.User;
 import com.dn.shop.repository.ProductRepository;
 import com.dn.shop.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -20,6 +21,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public ResponseEntity<String> addUser(AddUserDTO addUserDTO){
 
@@ -99,4 +101,38 @@ public class UserService {
         return ResponseEntity.ok("Product Deleted from the basket");
     }
 
+    public ResponseEntity<String> registerUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+        return ResponseEntity.ok("User registered successfully!");
+    }
+
+    public ResponseEntity<String> login(String email, String password) {
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                return ResponseEntity.ok("Login successful!");
+            } else {
+                return ResponseEntity.badRequest().body("Invalid password!");
+            }
+        }
+        return ResponseEntity.badRequest().body("User not found!");
+    }
+
+    public ResponseEntity<User> getUserById(Long id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            return ResponseEntity.ok(userOptional.get());
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    public ResponseEntity<String> updateUser(User user) {
+        if (userRepository.existsById(user.getId())) {
+            userRepository.save(user);
+            return ResponseEntity.ok("User details updated successfully!");
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

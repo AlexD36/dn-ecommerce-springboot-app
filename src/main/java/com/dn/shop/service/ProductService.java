@@ -24,17 +24,42 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
-    public List<Product> get() {
+    public List<Product> getAllProducts() {
         return StreamSupport
                 .stream(productRepository.findAll().spliterator(), false)
-                .map(dto -> Product.builder()
-                    .name(dto.getName())
-                    .description(dto.getDescription())
-                    .build())
                 .collect(Collectors.toList());
     }
 
+    public ResponseEntity<Product> getProductById(Long id) {
+        Optional<Product> productOptional = productRepository.findById(id);
+        return productOptional.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
+    public ResponseEntity<String> createProduct(Product product) {
+        if (productRepository.findByName(product.getName()).isPresent()) {
+            return ResponseEntity.badRequest().body("Product already exists!");
+        }
+        productRepository.save(product);
+        return ResponseEntity.ok("Product added!");
+    }
+
+    public ResponseEntity<String> updateProduct(Long id, Product product) {
+        if (!productRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        product.setId(id);
+        productRepository.save(product);
+        return ResponseEntity.ok("Product updated successfully!");
+    }
+
+    public ResponseEntity<String> deleteProduct(Long id) {
+        if (!productRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        productRepository.deleteById(id);
+        return ResponseEntity.ok("Product deleted successfully!");
+    }
 
     public ResponseEntity<String> add(AddProductDTO product) {
         Product toBeSaved = Product.builder()

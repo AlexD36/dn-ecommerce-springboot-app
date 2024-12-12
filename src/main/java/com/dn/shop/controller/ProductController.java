@@ -2,7 +2,7 @@ package com.dn.shop.controller;
 
 import com.dn.shop.model.dto.AddProductDTO;
 import com.dn.shop.model.dto.EditProductDTO;
-import com.dn.shop.model.dto.ProductDTO;
+import com.dn.shop.model.entity.Product;
 import com.dn.shop.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -14,58 +14,43 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("product")
+@RequestMapping("/api/products")
 @RequiredArgsConstructor
 @Log4j2
 public class ProductController {
 
     private final ProductService productService;
-
     private final ObjectMapper mapper;
 
-    @GetMapping("/getall")
-    public List<ProductDTO> get() {
-
-//        List<Product> fromService =productService.get();
-//        List<ProductDTO> responseList = new ArrayList<>();
-//        for (Product p : fromService){
-//            ProductDTO dto = mapper.convertValue(p,ProductDTO.class);
-//            responseList.add(dto);
-//        }
-//        return responseList;
-
-        return productService.get()
-                .stream()
-                .map(product -> mapper.convertValue(product,ProductDTO.class))
-                .toList();
+    // Endpoint to fetch all products
+    @GetMapping
+    public List<Product> getAllProducts() {
+        return productService.getAllProducts();
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<String> add(@RequestBody AddProductDTO newProduct) {
-        log.info("adding newly received entity {}", newProduct);
+    // Endpoint to fetch a single product by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        return productService.getProductById(id);
+    }
+
+    // Endpoint to add a new product
+    @PostMapping
+    public ResponseEntity<String> addProduct(@RequestBody AddProductDTO newProduct) {
+        log.info("Adding newly received product {}", newProduct);
         return productService.add(newProduct);
     }
 
-    @DeleteMapping("/deleteProductByName")
-    public ResponseEntity<String> delete(@RequestParam(name = "name") String name){
-
-        try {
-            return productService.deleteProductByName(name) ? ResponseEntity.accepted().build() :
-                    ResponseEntity.notFound().build();
-        } catch (NoSuchFieldException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    // Endpoint to update a product
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateProduct(@PathVariable Long id, @RequestBody EditProductDTO updatedProduct) {
+        log.info("Updating product with ID {} with new details {}", id, updatedProduct);
+        return productService.editProduct(id, updatedProduct);
     }
 
-    @DeleteMapping("/deleteProductById")
-    public ResponseEntity<String> deleteProductById(@RequestParam("id") Long id){
+    // Endpoint to delete a product by ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
         return productService.deleteProductById(id);
-    }
-
-    @PutMapping("/edit")
-    public ResponseEntity<String> edit(@RequestParam(name = "id") Long id, @RequestBody EditProductDTO newProduct){
-        log.info("edit request for productID {} with new details {}", id, newProduct);
-
-        return productService.editProduct(id, newProduct);
     }
 }
