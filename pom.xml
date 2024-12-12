@@ -8,7 +8,7 @@
 		<version>3.3.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.ibm.practica</groupId>
+	<groupId>com.dn</groupId>
 	<artifactId>shop</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>shop</name>
@@ -91,6 +91,11 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-boot-starter</artifactId>
+			<version>3.0.0</version>
 		</dependency>
 	</dependencies>
 

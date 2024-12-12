@@ -35,6 +35,6 @@ public interface UserRepository extends JpaRepository<User , Long> {
     @Query("UPDATE User u SET u.email = :newEmail where u.email = :oldEmail")
     void updateUserEmail(@Param("oldEmail") String oldEmail , @Param("newEmail") String newEmail);
 
-
+    Optional<User> findByEmail(String email);
 
 }
