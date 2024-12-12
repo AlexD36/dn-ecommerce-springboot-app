@@ -117,6 +117,7 @@ src/main/java/com/example/ecommerce/
 ### **Clone the Repository**
 
 git clone https://github.com/AlexD36/dn-ecommerce-springboot-app
+
 cd dn-ecommerce-springboot-app
 
 
@@ -148,24 +149,6 @@ cd dn-ecommerce-springboot-app
 
 ---
 
-## **Future Enhancements**
-- Add product recommendations based on user behavior.
-- Implement payment gateway integration.
-- Develop a reporting module for admins.
-- Enable email notifications for orders.
-
----
-
-## **License**
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-## **Contact**
-If you have any questions or suggestions, feel free to reach out:
-
-- **Email**: your-email@example.com
-- **GitHub**: [your-username](https://github.com/your-username)
 
 
 ### **Screenshots (Optional)**
