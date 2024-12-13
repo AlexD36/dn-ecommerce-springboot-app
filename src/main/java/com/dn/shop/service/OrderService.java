@@ -1,44 +1,80 @@
 package com.dn.shop.service;
 
+import com.dn.shop.exception.ResourceNotFoundException;
 import com.dn.shop.model.entity.Order;
+import com.dn.shop.model.entity.OrderStatus;
 import com.dn.shop.repository.OrderRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-@Log4j2
+@Slf4j
+@Validated
 @RequiredArgsConstructor
 public class OrderService {
 
     private final OrderRepository orderRepository;
 
-    // Method to create a new order
-    public ResponseEntity<String> createOrder(Order order) {
-        // Calculate total price before saving
-        order.calculateTotalPrice(); // Ensure total price is calculated
-        orderRepository.save(order); // Save the order
-        return ResponseEntity.ok("Order created successfully!");
-    }
-
-    // Method to fetch all orders for a specific user
-    public List<Order> getOrdersByUser(Long userId) {
-        return orderRepository.findByUser_Id(userId); // Fetch orders by user ID
-    }
-
-    // Method to update the order status
-    public ResponseEntity<String> updateOrderStatus(Long orderId, String status) {
-        Optional<Order> orderOptional = orderRepository.findById(orderId);
-        if (orderOptional.isPresent()) {
-            Order order = orderOptional.get();
-            order.setStatus(status); // Update the status
-            orderRepository.save(order); // Save the updated order
-            return ResponseEntity.ok("Order status updated successfully!");
+    @Transactional
+    public ResponseEntity<Order> createOrder(@Valid Order order) {
+        if (order == null) {
+            throw new IllegalArgumentException("Order cannot be null");
         }
-        return ResponseEntity.notFound().build(); // Return 404 if order not found
+        if (order.getUser() == null) {
+            throw new IllegalArgumentException("Order must have an associated user");
+        }
+
+        log.info("Creating new order for user: {}", order.getUser().getId());
+        order.calculateTotalPrice();
+        order.setStatus(OrderStatus.CREATED);
+        Order savedOrder = orderRepository.save(order);
+        log.debug("Order created successfully with ID: {}", savedOrder.getId());
+        return ResponseEntity.ok(savedOrder);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Order> getOrdersByUser(Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("Invalid user ID");
+        }
+
+        log.info("Fetching orders for user: {}", userId);
+        return orderRepository.findByUser_Id(userId);
+    }
+
+    @Transactional
+    public ResponseEntity<Order> updateOrderStatus(Long orderId, OrderStatus status) {
+        if (orderId == null || orderId <= 0) {
+            throw new IllegalArgumentException("Invalid order ID");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Order status cannot be null");
+        }
+
+        log.info("Updating order {} status to: {}", orderId, status);
+        
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                String.format("Order not found with id: %d", orderId)));
+        
+        validateStatusTransition(order.getStatus(), status);
+        
+        order.setStatus(status);
+        Order updatedOrder = orderRepository.save(order);
+        log.debug("Order {} status updated successfully to {}", orderId, status);
+        return ResponseEntity.ok(updatedOrder);
+    }
+
+    private void validateStatusTransition(OrderStatus currentStatus, OrderStatus newStatus) {
+        if (currentStatus == OrderStatus.CANCELLED && newStatus != OrderStatus.CANCELLED) {
+            throw new IllegalStateException("Cannot change status of cancelled order");
+        }
     }
 } 

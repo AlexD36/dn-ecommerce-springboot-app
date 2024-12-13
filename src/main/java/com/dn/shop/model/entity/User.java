@@ -12,6 +12,13 @@ import lombok.*;
 
 import java.util.List;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
+
+/**
+ * User entity that implements Spring Security's UserDetails interface.
+ * Represents a user in the system with basic information and shopping basket functionality.
+ */
 @Getter
 @Setter
 @Builder
@@ -25,84 +32,106 @@ public class User extends BaseEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")
     private Long id;
     
+    @Column(nullable = false)
     private String firstName;
+    
+    @Column(nullable = false)
     private String lastName;
+    
+    @Email
+    @Column(nullable = false, unique = true)
     private String email;
+    
+    @Size(min = 6)
+    @Column(nullable = false)
     private String password;
 
-    @OneToMany
-    private List<Product> basket;
+    /**
+     * User's shopping basket containing selected products
+     * Initialized as empty ArrayList to prevent NPE
+     */
+    @OrderBy("id")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_basket",
+        joinColumns = @JoinColumn(name = "user_id", nullable = false),
+        inverseJoinColumns = @JoinColumn(name = "product_id", nullable = false)
+    )
+    @Builder.Default
+    private List<Product> basket = new ArrayList<>();
 
-    private List<Product> cart;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean accountNonExpired = true;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean accountNonLocked = true;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean credentialsNonExpired = true;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean enabled = true;
 
     // Getters and Setters (Lombok will generate these due to @Getter and @Setter)
 
-    // Override toString for debugging purposes
+    /**
+     * Custom toString implementation that excludes sensitive information
+     * @return String representation of User without password
+     */
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", basket=" + basket +
-                ", cart=" + cart +
-                '}';
+        return String.format(
+            "User{id=%d, firstName='%s', lastName='%s', email='%s', basketSize=%d}",
+            id,
+            firstName,
+            lastName,
+            email,
+            basket != null ? basket.size() : 0
+        );
     }
 
+    /**
+     * Returns the authorities granted to the user.
+     * Currently, all users have the "USER" role.
+     * @return a list containing the user's authorities
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Return the authorities for the user
-        // This could be a list of roles or permissions
-        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        // Example: Add roles to the authorities list
-        grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_USER")); // Add user role
-        // Add more roles as needed
-        return grantedAuthorities; 
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        return authorities;
     }
 
-    // Implement other methods from UserDetails
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
+    /**
+     * Returns the email address as the username for authentication
+     * @return the user's email address
+     */
     @Override
     public String getUsername() {
-        return this.email; // Assuming email is the username
+        return email != null ? email : "";
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Implement your logic
+        return accountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Implement your logic
+        return accountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Implement your logic
+        return credentialsNonExpired;
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // Implement your logic
-    }
-
-    /**
-     * Sets the basket for the user.
-     * 
-     * @param basket A list of Product objects to be set in the user's basket.
-     */
-    public void setCart(List<Product> basket) {
-        this.basket = basket; // Use 'basket' as the field in the User class
-    }
-
-    public List<Product> getCart() {
-        return cart != null ? cart : new ArrayList<>();
+        return enabled;
     }
 }

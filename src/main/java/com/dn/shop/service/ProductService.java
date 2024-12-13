@@ -86,56 +86,70 @@ public class ProductService {
         return ResponseEntity.ok("Product added!");
     }
 
-    public ResponseEntity<String> deleteProductById(Long id){
-        if(userRepository.findAll().stream().anyMatch(user -> user.getBasket().contains(productRepository.findById(id).get()))){
-            return ResponseEntity.badRequest().body("Product is into the user basket");
-        }
-        if(productRepository.findById(id).isPresent()){
-            productRepository.delete(productRepository.findById(id).get());
-            return ResponseEntity.ok("Deleted succesfully!");
-        }
-        if(productRepository.count() == 0){
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.badRequest().body("Product not found");
-    }
-
-    public boolean deleteProductByName(String name) throws NoSuchFieldException {
-        log.info("Delete request for productID {}", name);
-        Optional<Product> findByName = productRepository.findByName(name);
-
-        if(userRepository.findAll().stream().anyMatch(user -> user.getBasket().contains(findByName.get()))){
-            log.info("The product is into an user basket");
-            return false;
-        }
-
-        if (productRepository.count() == 0){
-            log.warn("ID {} not found in DB. Nothing to delete.",name);
-            return false;
-        }
-        if(findByName.isPresent()){
-            productRepository.delete(productRepository.findByName(name).get());
-            return true;
-        }
-
-        return false;
-
-    }
-
-    public ResponseEntity<String> editProduct(Long id, EditProductDTO newProduct){
-        log.info("edit request for productID {}", id);
-        Optional<Product> byId = productRepository.findById(id);
-        if (byId.isEmpty()){
+    public ResponseEntity<String> deleteProductById(Long id) {
+        Optional<Product> productOptional = productRepository.findById(id);
+        
+        if (productOptional.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+        
+        Product product = productOptional.get();
+        boolean isInBasket = userRepository.findAll().stream()
+                .anyMatch(user -> user.getBasket().contains(product));
+                
+        if (isInBasket) {
+            return ResponseEntity.badRequest().body("Product is in a user's basket");
+        }
+        
+        productRepository.delete(product);
+        return ResponseEntity.ok("Deleted successfully!");
+    }
 
-        if(byId.isPresent()){
+    public boolean deleteProductByName(String name) {
+        log.info("Delete request for product name: {}", name);
+        Optional<Product> productOptional = productRepository.findByName(name);
+        
+        if (productOptional.isEmpty()) {
+            log.warn("Product with name {} not found in DB. Nothing to delete.", name);
+            return false;
+        }
+        
+        Product product = productOptional.get();
+        boolean isInBasket = userRepository.findAll().stream()
+                .anyMatch(user -> user.getBasket().contains(product));
+                
+        if (isInBasket) {
+            log.info("The product is in a user's basket");
+            return false;
+        }
+        
+        productRepository.delete(product);
+        return true;
+    }
+
+    public ResponseEntity<String> editProduct(Long id, EditProductDTO newProduct) {
+        log.info("Edit request for productID: {}", id);
+        Optional<Product> productOptional = productRepository.findById(id);
+        
+        if (productOptional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        Product product = productOptional.get();
+        Optional<Product> existingProductWithName = productRepository.findByName(newProduct.getName());
+        
+        if (existingProductWithName.isPresent() && !existingProductWithName.get().getId().equals(id)) {
             return ResponseEntity.badRequest().body("Another product with the same name already exists!");
         }
-
-        byId.get().setName(newProduct.getName());
-        byId.get().setDescription(newProduct.getDescription());
-        productRepository.save(byId.get());
-        return ResponseEntity.ok("Edited succesfully!");
+        
+        product.setName(newProduct.getName());
+        product.setDescription(newProduct.getDescription());
+        if (newProduct.getPrice() != null) {
+            product.setPrice(newProduct.getPrice());
+        }
+        product.setStock(newProduct.getStock());
+        
+        productRepository.save(product);
+        return ResponseEntity.ok("Edited successfully!");
     }
 }

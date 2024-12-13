@@ -37,7 +37,7 @@ public class UserService {
                 .lastName(registerUserDTO.getLastName().toLowerCase())
                 .email(registerUserDTO.getEmail().toLowerCase())
                 .password(passwordEncoder.encode(registerUserDTO.getPassword()))
-                .cart(registerUserDTO.getCartDTO() != null ? registerUserDTO.getCartDTO().getCart() : null) // Handle potential null cartDTO
+                .basket(registerUserDTO.getCartDTO() != null ? registerUserDTO.getCartDTO().getCart() : null) // Handle potential null cartDTO
                 .build();
        if(userRepository.count() == 0){
             userRepository.save(userToBeSaved);
@@ -102,7 +102,7 @@ public class UserService {
             return ResponseEntity.noContent().build();
         }
         if(userRepository.findById(uId).isPresent() && productRepository.findByName(productName).isPresent()){
-            userRepository.findById(uId).get().getCart().add(productRepository.findByName(productName).get());
+            userRepository.findById(uId).get().getBasket().add(productRepository.findByName(productName).get());
             return ResponseEntity.ok("Added Succesfully");
         }
         return ResponseEntity.badRequest().body("Something went wrong");
@@ -123,10 +123,10 @@ public class UserService {
 
         User user = userOptional.get();
         Optional<Product> productOptional = productRepository.findById(productId);
-        if (!user.getCart().contains(productOptional.orElse(null)) || user.getCart().isEmpty()) {
+        if (!user.getBasket().contains(productOptional.orElse(null)) || user.getBasket().isEmpty()) {
             return ResponseEntity.badRequest().body("Cart is empty or the product was not found!");
         }
-        user.getCart().remove(productOptional.get());
+        user.getBasket().remove(productOptional.get());
         return ResponseEntity.ok("Product Deleted from the cart");
     }
 
@@ -179,9 +179,9 @@ public class UserService {
 
         // Associate the cart with the user
         User user = userOptional.get();
-        user.setCart(cartDTO.getCart()); // Ensure getCart() returns a List<Product>
+        user.setBasket(cartDTO.getCart()); // Using basket instead of cart
 
-        // Save the updated user with the new cart
+        // Save the updated user with the new basket
         userRepository.save(user);
         return ResponseEntity.ok("Cart added successfully!");
     }

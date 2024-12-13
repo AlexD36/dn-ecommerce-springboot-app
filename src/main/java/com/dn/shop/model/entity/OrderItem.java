@@ -26,11 +26,17 @@ public class OrderItem extends BaseEntity {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
+    @Column(nullable = false)
     private int quantity;
+
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal price; // Price at the time of order
 
     // Helper method to calculate the subtotal for this order item
     public BigDecimal calculateSubtotal() {
-        return price.multiply(BigDecimal.valueOf(quantity)); // Calculate subtotal
+        if (price == null) {
+            return BigDecimal.ZERO;
+        }
+        return price.multiply(BigDecimal.valueOf(quantity));
     }
 } 

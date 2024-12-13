@@ -1,6 +1,7 @@
 package com.dn.shop.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,56 +10,67 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = true)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "orders") // "order" is a reserved keyword in SQL
-public class Order extends BaseEntity{
+@Table(name = "orders", indexes = {
+    @Index(name = "idx_orders_user_id", columnList = "user_id")
+})
+public class Order extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
-
-    @ManyToOne
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "order_id")
-    private List<OrderItem> orderItems;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderItem> orderItem;
-
+    @NotNull
+    @Column(nullable = false)
     private BigDecimal totalPrice;
-    private String status; // e.g., "PENDING", "COMPLETED", etc.
+
+    @NotNull
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
+    @NotNull
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    // Method to calculate the total price of the order
-    public void calculateTotalPrice() {
-        BigDecimal total = BigDecimal.ZERO; // Initialize total price
-    
-        for (OrderItem item : orderItems) {
-            total = total.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
-        }
-    
-        this.totalPrice = total; // Update totalPrice field
-    }
+    @Column
+    private LocalDateTime updatedAt;
 
-    public void setStatus(String status) {
-        // logic
-        this.status = status;
+    public void calculateTotalPrice() {
+        this.totalPrice = orderItems == null ? BigDecimal.ZERO :
+            orderItems.stream()
+                .map(OrderItem::calculateSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @PrePersist
-    public void prePersist() {
-    if (createdAt == null) {
-        createdAt = LocalDateTime.now();
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = now;
+        }
+        if (status == null) {
+            status = OrderStatus.PENDING;
+        }
+        updatedAt = now;
+        calculateTotalPrice();
     }
-}
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 } 

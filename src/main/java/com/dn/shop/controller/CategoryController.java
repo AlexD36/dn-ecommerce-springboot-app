@@ -3,7 +3,6 @@ package com.dn.shop.controller;
 import com.dn.shop.model.entity.Category;
 import com.dn.shop.service.CategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public class CategoryController {
 
     // Endpoint to add a new category
     @PostMapping
-    public ResponseEntity<String> addCategory(@RequestBody Category category) {
+    public Category addCategory(@RequestBody Category category) {
         return categoryService.createCategory(category);
     }
 } 
