@@ -9,7 +9,7 @@ import com.dn.shop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -24,7 +24,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public ResponseEntity<String> addUser(RegisterUserDTO registerUserDTO){
         // Validate input

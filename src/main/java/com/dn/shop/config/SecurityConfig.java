@@ -26,14 +26,21 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/users/register", "/api/users/login").permitAll() // Allow public access to these endpoints
-                .anyRequest().authenticated() // All other requests require authentication
+                .requestMatchers("/api/users/register", "/api/users/login").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
+                .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Use stateless session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .headers(headers -> headers
+                .frameOptions(frame -> frame.sameOrigin())
+            )
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/h2-console/**")
             );
 
-        return http.build(); // Build the SecurityFilterChain
+        return http.build();
     }
 
     @Bean

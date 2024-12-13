@@ -1,9 +1,11 @@
 package com.dn.shop.util;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +35,7 @@ public class JwtUtil {
                 .setSubject(subject)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS512, secretKey)
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
                 .compact();
     }
 
@@ -56,8 +58,9 @@ public class JwtUtil {
 
     private Claims extractAllClaims(String token) {
         try {
-            return Jwts.parser()
-                    .setSigningKey(secretKey)
+            return Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                    .build()
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException e) {
@@ -66,7 +69,7 @@ public class JwtUtil {
             throw new JwtException("Unsupported JWT token");
         } catch (MalformedJwtException e) {
             throw new JwtException("Invalid JWT token");
-        } catch (SignatureException e) {
+        } catch (SecurityException e) {
             throw new JwtException("Invalid JWT signature");
         } catch (IllegalArgumentException e) {
             throw new JwtException("JWT claims string is empty");
