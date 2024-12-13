@@ -22,13 +22,13 @@ public class ProductController {
 
     // Endpoint to fetch all products
     @GetMapping
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return ResponseEntity.ok(productService.getAllProducts());
     }
 
     // Endpoint to fetch a single product by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<Product> getProductById(@PathVariable(required = true) Long id) {
         return productService.getProductById(id);
     }
 

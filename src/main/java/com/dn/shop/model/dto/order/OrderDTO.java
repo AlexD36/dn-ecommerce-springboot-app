@@ -1,16 +1,20 @@
 package com.dn.shop.model.dto.order;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Builder;
+import com.dn.shop.model.entity.OrderStatus;
 
+@Builder
 public class OrderDTO {
     private Long id; // Unique identifier of the order
     private Long userId; // The ID of the user who placed the order
     private List<OrderItemDTO> orderItems; // A list of OrderItemDTO objects
     private BigDecimal totalPrice; // Total price of the order
-    private String status; // The current status of the order (e.g., PENDING, SHIPPED, DELIVERED)
-    private Date orderDate; // Date when the order was placed
+    private OrderStatus status; // The current status of the order (e.g., PENDING, SHIPPED, DELIVERED)
+    private LocalDateTime orderDate; // Date when the order was placed
+    private LocalDateTime createdAt;  // Add this field
 
     // Getters and Setters
     public Long getId() {
@@ -45,19 +49,27 @@ public class OrderDTO {
         this.totalPrice = totalPrice;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 
-    public Date getOrderDate() {
+    public LocalDateTime getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderDate(Date orderDate) {
+    public void setOrderDate(LocalDateTime orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 } 

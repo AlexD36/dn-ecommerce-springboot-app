@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 @RequiredArgsConstructor
@@ -43,19 +44,26 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<GetUserDTO> getUserById(@PathVariable Long id) {
         if (id == null) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().build();
         }
-        return userService.getUserById(id);
+        ResponseEntity<User> userResponse = userService.getUserById(id);
+        if (!userResponse.getStatusCode().is2xxSuccessful() || userResponse.getBody() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        GetUserDTO userDTO = objectMapper.convertValue(userResponse.getBody(), GetUserDTO.class);
+        return ResponseEntity.ok(userDTO);
     }
 
     @GetMapping("/getUsers")
-    public List<GetUserDTO> getUsers(){
-       return userService.getUsers()
-               .stream()
-               .map(user -> objectMapper.convertValue(user , GetUserDTO.class))
-               .toList();
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<GetUserDTO>> getUsers() {
+        List<GetUserDTO> users = userService.getUsers()
+                .stream()
+                .map(user -> objectMapper.convertValue(user, GetUserDTO.class))
+                .toList();
+        return ResponseEntity.ok(users);
     }
 
     @DeleteMapping("/deleteUserByEmail")
