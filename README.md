@@ -148,12 +148,3 @@ cd dn-ecommerce-springboot-app
 - Ensure that all tests pass before creating a pull request.
 
 ---
-
-
-
-### **Screenshots (Optional)**
-Include screenshots of your Swagger UI, database structure, or example API requests and responses.
-
----
-
-This README is comprehensive, professional, and ensures potential contributors or users can easily understand and work with your project. Let me know if you want specific adjustments or additional sections!
