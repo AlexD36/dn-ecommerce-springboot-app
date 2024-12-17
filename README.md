@@ -1,4 +1,3 @@
-
 # E-Commerce Backend with Spring Boot
 
 ![Java](https://img.shields.io/badge/Java-17+-brightgreen) 
@@ -65,46 +64,85 @@ This project is a backend system for an e-commerce application, built using **Ja
 ## **Project Structure**
 
 ```plaintext
-src/main/java/com/example/ecommerce/
-├── controller/        # REST controllers for handling API requests.
-├── dto/               # Data Transfer Objects for data input/output.
-│   ├── user/          # User-related DTOs.
-│   ├── product/       # Product-related DTOs.
-│   ├── order/         # Order-related DTOs.
-│   ├── cart/          # Shopping cart DTOs.
-│   ├── category/      # Category DTOs.
-├── entity/            # JPA entities mapped to database tables.
-├── exception/         # Custom exception handling.
-├── repository/        # Interfaces for database interactions.
-├── service/           # Business logic services.
-└── utils/             # Utility classes (e.g., JWT handling, mappers).
+src/
+├── main/
+│   ├── java/
+│   │   └── com/
+│   │       └── dn/
+│   │           └── shop/
+│   │               ├── config/              # Configuration classes
+│   │               │   ├── SecurityConfig   # Security configuration
+│   │               │   └── SwaggerConfig    # API documentation config
+│   │               ├── controller/          # REST API controllers
+│   │               │   ├── CategoryController
+│   │               │   ├── OrderController
+│   │               │   ├── ProductController
+│   │               │   ├── TestController
+│   │               │   └── UserController
+│   │               ├── model/               # Data models
+│   │               │   ├── dto/             # Data Transfer Objects
+│   │               │   │   ├── cart/        # Cart-related DTOs
+│   │               │   │   ├── category/    # Category-related DTOs
+│   │               │   │   ├── order/       # Order-related DTOs
+│   │               │   │   ├── product/     # Product-related DTOs
+│   │               │   │   └── user/        # User-related DTOs
+│   │               │   └── entity/          # JPA entities
+│   │               ├── repository/          # Data access layer
+│   │               ├── service/             # Business logic
+│   │               ├── util/                # Utility classes
+│   │               └── ShopApplication.java # Main application class
+│   └── resources/
+│       └── application.properties          # Application configuration
+└── test/
+    └── java/
+        └── com/
+            └── dn/
+                └── shop/
+                    └── ShopApplicationTests.java
 ```
 
 ---
 
 ## **API Documentation**
 
-### **Authentication**
-- **POST** `/api/auth/register` - Register a new user.
-- **POST** `/api/auth/login` - Authenticate and retrieve a JWT.
-
-### **Product Management**
-- **GET** `/api/products` - Fetch all products (with pagination).
-- **GET** `/api/products/{id}` - Fetch a specific product.
-- **POST** `/api/products` - Create a new product (Admin only).
-- **PUT** `/api/products/{id}` - Update a product (Admin only).
-- **DELETE** `/api/products/{id}` - Delete a product (Admin only).
-
-### **Order Management**
-- **POST** `/api/orders` - Place a new order.
-- **GET** `/api/orders` - View order history (for the logged-in user).
-- **PUT** `/api/orders/{id}/status` - Update order status (Admin only).
+### **User Management**
+- **PUT** `/api/users/{email}` - Update user's email address
+- **DELETE** `/api/users/{email}` - Delete user account by email
+- **POST** `/api/users/register` - Register new user account
+- **POST** `/api/users/login` - Authenticate user and receive JWT token
+- **POST** `/api/users/addCart` - Add a new cart to user's account
+- **GET** `/api/users` - Retrieve list of all users (admin only)
+- **GET** `/api/users/{id}` - Get user details by ID
 
 ### **Cart Management**
-- **GET** `/api/cart` - View items in the cart.
-- **POST** `/api/cart` - Add an item to the cart.
-- **PUT** `/api/cart/{id}` - Update an item's quantity in the cart.
-- **DELETE** `/api/cart/{id}` - Remove an item from the cart.
+(Included in User Controller)
+- **POST** `/api/users/{userId}/cart` - Add product to user's cart
+- **DELETE** `/api/users/{userId}/cart/{productId}` - Remove product from cart
+
+### **Product Management**
+- **GET** `/api/v1/products` - Get all products (with pagination)
+- **GET** `/api/v1/products/{id}` - Get product by ID
+- **POST** `/api/v1/products` - Create new product
+- **PUT** `/api/v1/products/{id}` - Update existing product
+- **DELETE** `/api/v1/products/{id}` - Delete product
+
+### **Order Management**
+- **POST** `/api/orders` - Create a new order
+- **GET** `/api/orders/user/{userId}` - Get orders by user
+- **PUT** `/api/orders/{orderId}/status` - Update order status
+
+### **Category Management**
+- **GET** `/api/categories` - Get all categories
+- **POST** `/api/categories` - Create new category
+
+### **Testing Endpoint**
+- **GET** `/test` - Test endpoint returning "Test431"
+
+All endpoints are documented with Swagger UI, accessible at:
+`http://localhost:8080/swagger-ui.html`
+
+API documentation is available at:
+`http://localhost:8080/api-docs`
 
 ---
 

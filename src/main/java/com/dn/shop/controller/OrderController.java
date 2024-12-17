@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -72,6 +73,15 @@ public class OrderController {
         @RequestParam @NotNull OrderStatus status
     ) {
         log.info("Updating order {} status to: {}", orderId, status);
-        return orderService.updateOrderStatus(orderId, status);
+        // Consider adding try-catch block for better error handling
+        try {
+            return orderService.updateOrderStatus(orderId, status);
+        } catch (EntityNotFoundException e) {
+            log.error("Order not found: {}", orderId);
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Error updating order status", e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 } 

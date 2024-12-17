@@ -7,10 +7,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import com.dn.shop.model.dto.category.CategoryDTO;
+import org.modelmapper.ModelMapper;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @Log4j2
@@ -18,16 +19,17 @@ import java.util.stream.StreamSupport;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ModelMapper modelMapper;
 
     /**
      * Retrieves all categories from the database
      * @return List of all categories
      */
-    public List<Category> getAllCategories() {
+    public List<CategoryDTO> getAllCategories() {
         log.debug("Fetching all categories");
-        return StreamSupport
-                .stream(categoryRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
+        return categoryRepository.findAll().stream()
+            .map(category -> modelMapper.map(category, CategoryDTO.class))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -48,5 +50,11 @@ public class CategoryService {
 
         log.debug("Creating new category: {}", category.getName());
         return categoryRepository.save(category);
+    }
+
+    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
+        Category category = modelMapper.map(categoryDTO, Category.class);
+        Category savedCategory = categoryRepository.save(category);
+        return modelMapper.map(savedCategory, CategoryDTO.class);
     }
 } 

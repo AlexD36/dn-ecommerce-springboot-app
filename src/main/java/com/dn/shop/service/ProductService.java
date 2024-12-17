@@ -7,13 +7,14 @@ import com.dn.shop.repository.UserRepository;
 import com.dn.shop.model.dto.product.CreateProductDTO;
 import com.dn.shop.model.entity.Category;
 import com.dn.shop.repository.CategoryRepository;
+import com.dn.shop.exception.ResourceNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,10 +35,9 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public ResponseEntity<Product> getProductById(Long id) {
-        Optional<Product> productOptional = productRepository.findById(id);
-        return productOptional.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public Product getProductById(Long id) {
+        return productRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
     }
 
     public ResponseEntity<String> createProduct(Product product) {
@@ -65,25 +65,23 @@ public class ProductService {
         return ResponseEntity.ok("Product deleted successfully!");
     }
 
-    public ResponseEntity<String> add(CreateProductDTO newProduct) {
-        BigDecimal defaultPrice = newProduct.getPrice();
-        int defaultStock = newProduct.getStock();
-
+    public Product add(CreateProductDTO newProduct) {
         Category category = categoryRepository.findById(newProduct.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("Category not found"));
 
-        Product toBeSaved = new Product(
+        if (productRepository.findByName(newProduct.getName()).isPresent()) {
+            throw new IllegalArgumentException("Product already exists!");
+        }
+
+        Product product = new Product(
                 newProduct.getName().toLowerCase(),
                 newProduct.getDescription().toLowerCase(),
-                defaultPrice,
-                defaultStock,
+                newProduct.getPrice(),
+                newProduct.getStock(),
                 category
         );
-        if (productRepository.findByName(toBeSaved.getName()).isPresent()) {
-            return ResponseEntity.badRequest().body("Product already exists!");
-        }
-        productRepository.save(toBeSaved);
-        return ResponseEntity.ok("Product added!");
+        
+        return productRepository.save(product);
     }
 
     public ResponseEntity<String> deleteProductById(Long id) {
@@ -127,29 +125,24 @@ public class ProductService {
         return true;
     }
 
-    public ResponseEntity<String> editProduct(Long id, EditProductDTO newProduct) {
-        log.info("Edit request for productID: {}", id);
-        Optional<Product> productOptional = productRepository.findById(id);
+    public Product editProduct(Long id, EditProductDTO newProduct) {
+        Product product = productRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         
-        if (productOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        Product product = productOptional.get();
         Optional<Product> existingProductWithName = productRepository.findByName(newProduct.getName());
-        
         if (existingProductWithName.isPresent() && !existingProductWithName.get().getId().equals(id)) {
-            return ResponseEntity.badRequest().body("Another product with the same name already exists!");
+            throw new IllegalArgumentException("Another product with the same name already exists!");
         }
         
         product.setName(newProduct.getName());
         product.setDescription(newProduct.getDescription());
-        if (newProduct.getPrice() != null) {
-            product.setPrice(newProduct.getPrice());
-        }
+        product.setPrice(newProduct.getPrice());
         product.setStock(newProduct.getStock());
         
-        productRepository.save(product);
-        return ResponseEntity.ok("Edited successfully!");
+        return productRepository.save(product);
+    }
+
+    public Page<Product> getAllProducts(PageRequest pageRequest) {
+        return productRepository.findAll(pageRequest);
     }
 }

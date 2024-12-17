@@ -1,28 +1,36 @@
 package com.dn.shop.controller;
 
-import com.dn.shop.model.entity.Category;
 import com.dn.shop.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
+import com.dn.shop.model.dto.category.CategoryDTO;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
+@Tag(name = "Category", description = "Category management APIs")
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    // Endpoint to fetch all categories
+    @Operation(summary = "Get all categories")
     @GetMapping
-    public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
+    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
+        return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
-    // Endpoint to add a new category
+    @Operation(summary = "Create a new category")
     @PostMapping
-    public Category addCategory(@RequestBody Category category) {
-        return categoryService.createCategory(category);
+    public ResponseEntity<CategoryDTO> addCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(categoryService.createCategory(categoryDTO));
     }
 } 
