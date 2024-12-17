@@ -8,7 +8,8 @@
 ## **Overview**
 
 This project is a backend system for an e-commerce application, built using **Java** and **Spring Boot**. It provides RESTful APIs for managing products, users, orders, and shopping carts. The backend is designed to be scalable, modular, and secure, following best practices for web application development.
-⚠️ Note: Security is temporarily disabled to allow testing of the APIs. This is for development purposes only. Do not use this configuration in production environments.
+
+🛠️ Note: Security is temporarily disabled to allow testing of the APIs. This is for development purposes only.
 
 ---
 
